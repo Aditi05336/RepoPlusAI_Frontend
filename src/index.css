@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: 
+      radial-gradient(circle at 10% 10%, rgba(201, 161, 94, 0.55), transparent 45%),
+      radial-gradient(circle at 90% 15%, rgba(28, 37, 65, 0.45), transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(201, 161, 94, 0.35), transparent 55%),
+      linear-gradient(160deg, #FAF3E4 0%, #F3EAF5 45%, #EAEEF7 100%);
+    background-attachment: fixed;
+    color: #12172A;
+    @apply antialiased font-sans selection:bg-[#1C2541] selection:text-white;
+  }
+  input {
+    caret-color: #1C2541;
+    line-height: 1.5;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF3E4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C9A15E;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A6C2E;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
