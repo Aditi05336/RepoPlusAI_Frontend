@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+import { apiClient } from './client';
 
 export interface User {
   id: number;
@@ -33,7 +31,7 @@ export interface LoginData {
 
 export const signupUser = async (data: SignupData): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/signup`, data);
+    const response = await apiClient.post<AuthResponse>('/auth/signup', data);
     return response.data;
   } catch (error: any) {
     if (error.response?.data) {
@@ -48,7 +46,7 @@ export const signupUser = async (data: SignupData): Promise<AuthResponse> => {
 
 export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/login`, data);
+    const response = await apiClient.post<AuthResponse>('/auth/login', data);
     return response.data;
   } catch (error: any) {
     if (error.response?.data) {
@@ -63,7 +61,7 @@ export const loginUser = async (data: LoginData): Promise<AuthResponse> => {
 
 export const logoutUser = async (): Promise<AuthResponse> => {
   try {
-    const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/logout`);
+    const response = await apiClient.post<AuthResponse>('/auth/logout');
     return response.data;
   } catch {
     return { success: true };
@@ -72,7 +70,7 @@ export const logoutUser = async (): Promise<AuthResponse> => {
 
 export const getCurrentUser = async (token: string): Promise<AuthResponse> => {
   try {
-    const response = await axios.get<AuthResponse>(`${API_BASE_URL}/auth/me`, {
+    const response = await apiClient.get<AuthResponse>('/auth/me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
