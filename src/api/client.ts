@@ -18,3 +18,24 @@ export const apiClient = axios.create({
   },
   timeout: 90000, // 90 seconds for deep AI & repository analysis
 });
+
+// Automatically attach JWT token to all requests if authenticated
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('repopulse_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle expired or invalid JWT (401 Unauthorized)
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('repopulse_token');
+      localStorage.removeItem('repopulse_user');
+    }
+    return Promise.reject(error);
+  }
+);

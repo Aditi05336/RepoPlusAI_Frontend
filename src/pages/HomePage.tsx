@@ -16,9 +16,11 @@ import {
   Terminal,
 } from 'lucide-react';
 import { Card } from '../components/common/Card';
+import { useAnalysis } from '../context/AnalysisContext';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const { isMockSignedIn } = useAnalysis();
 
   return (
     <div className="space-y-20 lg:space-y-28 py-8 animate-fade-in">
@@ -49,19 +51,28 @@ export const HomePage: React.FC = () => {
         {/* CTA Button Group */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 max-w-md sm:max-w-none mx-auto">
           <button
-            onClick={() => navigate('/search')}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#1C2541] hover:bg-[#141B30] text-white font-bold text-sm md:text-base shadow-lg shadow-[#1C2541]/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap group"
+            onClick={() => navigate(isMockSignedIn ? '/search' : '/signin')}
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#1C2541] hover:bg-[#141B30] text-white font-bold text-sm md:text-base shadow-lg shadow-[#1C2541]/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap group cursor-pointer"
           >
             <span>Analyze Repository</span>
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </button>
 
-          <button
-            onClick={() => navigate('/signin')}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-white/90 border border-[#1C2541] hover:bg-[#1C2541]/5 text-[#1C2541] font-bold text-sm md:text-base shadow-xs transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-          >
-            <span>Sign In</span>
-          </button>
+          {!isMockSignedIn ? (
+            <button
+              onClick={() => navigate('/signin')}
+              className="w-full sm:w-auto h-12 px-8 rounded-xl bg-white/90 border border-[#1C2541] hover:bg-[#1C2541]/5 text-[#1C2541] font-bold text-sm md:text-base shadow-xs transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+              <span>Sign In</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full sm:w-auto h-12 px-8 rounded-xl bg-white/90 border border-[#1C2541] hover:bg-[#1C2541]/5 text-[#1C2541] font-bold text-sm md:text-base shadow-xs transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+              <span>Go to Dashboard</span>
+            </button>
+          )}
         </div>
 
         {/* Quick Hero Stat Badges */}
