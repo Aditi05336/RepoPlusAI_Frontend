@@ -6,4 +6,4 @@ export const PRESET_REPOSITORIES = [
   { owner: 'vercel', repo: 'next.js', name: 'Next.js', label: 'vercel/next.js', category: 'Fullstack' },
 ];
 
-export const DEFAULT_API_BASE_URL = '/api';
+export const DEFAULT_API_BASE_URL = 'https://repoplusai-backend.onrender.com/api';
