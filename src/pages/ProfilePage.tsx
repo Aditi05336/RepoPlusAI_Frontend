@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { User as UserIcon, Mail, Github, Calendar, Edit3, Shield, CheckCircle } from 'lucide-react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User as UserIcon, Mail, Github, Calendar, Edit3, Shield } from 'lucide-react';
 import { Card } from '../components/common/Card';
 import { useAnalysis } from '../context/AnalysisContext';
 
 export const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAnalysis();
-  const [editing, setEditing] = useState(false);
-  const [savedFeedback, setSavedFeedback] = useState(false);
 
-  const displayName = user?.name || 'Developer User';
+  const displayName = user?.username || user?.name || 'Developer User';
   const displayEmail = user?.email || 'user@example.com';
   const displayGithub = user?.github_username || 'octocat';
   const displayUsername = user?.username || user?.github_username || 'octocat';
@@ -29,12 +29,8 @@ export const ProfilePage: React.FC = () => {
     ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : 'July 2026';
 
-  const handleEditClick = () => {
-    setEditing(!editing);
-    if (editing) {
-      setSavedFeedback(true);
-      setTimeout(() => setSavedFeedback(false), 3000);
-    }
+  const handleEditProfile = () => {
+    navigate('/settings');
   };
 
   return (
@@ -44,13 +40,6 @@ export const ProfilePage: React.FC = () => {
         <h1 className="text-3xl font-extrabold text-[#12172A] tracking-tight">User Profile</h1>
         <p className="text-[#3E4258] text-sm mt-1">Manage your account information and preferences</p>
       </div>
-
-      {savedFeedback && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-[#059669]" />
-          <span>Profile changes saved successfully! (UI Demo)</span>
-        </div>
-      )}
 
       {/* Main Profile Card */}
       <Card className="p-8">
@@ -70,11 +59,11 @@ export const ProfilePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <h2 className="text-2xl font-bold text-[#12172A]">{displayName}</h2>
               <button
-                onClick={handleEditClick}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#1C2541] text-[#1C2541] hover:bg-[#1C2541]/5 font-semibold text-xs transition-all shadow-xs"
+                onClick={handleEditProfile}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[#1C2541] text-[#1C2541] hover:bg-[#1C2541]/5 font-semibold text-xs transition-all shadow-xs cursor-pointer"
               >
                 <Edit3 className="h-3.5 w-3.5" />
-                <span>{editing ? 'Save Profile' : 'Edit Profile'}</span>
+                <span>Edit Profile</span>
               </button>
             </div>
 
@@ -142,3 +131,4 @@ export const ProfilePage: React.FC = () => {
     </div>
   );
 };
+
