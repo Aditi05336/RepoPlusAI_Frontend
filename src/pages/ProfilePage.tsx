@@ -10,7 +10,8 @@ export const ProfilePage: React.FC = () => {
 
   const displayName = user?.name || 'Developer User';
   const displayEmail = user?.email || 'user@example.com';
-  const displayGithub = user?.github_username || user?.username || 'octocat';
+  const displayGithub = user?.github_username || 'octocat';
+  const displayUsername = user?.username || user?.github_username || 'octocat';
 
   // Calculate user avatar initials (e.g., "Adit Sharma" -> "AS", "Aditi Rajput" -> "AR")
   const getInitials = (name: string) => {
@@ -77,7 +78,7 @@ export const ProfilePage: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-[#3E4258] text-sm font-medium">@{displayGithub}</p>
+            <p className="text-[#3E4258] text-sm font-medium">@{displayUsername}</p>
             <span className="inline-block mt-2 px-3 py-1 rounded-full bg-[#8A6C2E]/10 border border-[#8A6C2E]/30 text-[#8A6C2E] text-xs font-semibold">
               Pro Member
             </span>

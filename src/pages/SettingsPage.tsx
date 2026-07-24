@@ -9,7 +9,7 @@ export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, token, updateUser, logout } = useAnalysis();
 
-  const currentUsername = user?.github_username || user?.username || user?.name || '';
+  const currentUsername = user?.username || user?.github_username || '';
   const [newUsername, setNewUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
