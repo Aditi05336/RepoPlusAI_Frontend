@@ -1,28 +1,57 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, CheckCircle, Save } from 'lucide-react';
+import { User, LogOut, CheckCircle, Save, AlertCircle, Loader2 } from 'lucide-react';
 import { Card } from '../components/common/Card';
 import { useAnalysis } from '../context/AnalysisContext';
+import { updateUsername } from '../api/auth';
 
 export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { setIsMockSignedIn } = useAnalysis();
+  const { user, token, updateUser, logout } = useAnalysis();
 
-  const [currentUsername] = useState('aditi_rajput');
+  const currentUsername = user?.github_username || user?.username || user?.name || '';
   const [newUsername, setNewUsername] = useState('');
-  const [savedFeedback, setSavedFeedback] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
-  const handleSaveUsername = (e: React.FormEvent) => {
+  const handleSaveUsername = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newUsername.trim()) {
-      setSavedFeedback(true);
-      setTimeout(() => setSavedFeedback(false), 3000);
-      setNewUsername('');
+    setError(null);
+    setSavedFeedback(null);
+
+    const trimmed = newUsername.trim();
+    if (!trimmed) {
+      setError('Username cannot be empty.');
+      return;
+    }
+
+    if (!token) {
+      setError('Session expired or unauthorized. Please log in again.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await updateUsername(token, trimmed);
+      if (response.success && response.user) {
+        updateUser(response.user);
+        setSavedFeedback(response.message || 'Username updated successfully!');
+        setNewUsername('');
+        setTimeout(() => setSavedFeedback(null), 4000);
+      } else {
+        setError(response.error || 'Failed to update username.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected network error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    setIsMockSignedIn(false);
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -34,10 +63,17 @@ export const SettingsPage: React.FC = () => {
         <p className="text-[#3E4258] text-sm mt-1">Manage your account preferences</p>
       </div>
 
+      {error && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium flex items-center gap-2 animate-shake">
+          <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
       {savedFeedback && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-[#059669]" />
-          <span>Username updated successfully! (UI Demo)</span>
+          <CheckCircle className="h-4 w-4 text-[#059669] shrink-0" />
+          <span>{savedFeedback}</span>
         </div>
       )}
 
@@ -76,10 +112,20 @@ export const SettingsPage: React.FC = () => {
           {/* Save Changes Button */}
           <button
             type="submit"
-            className="h-11 px-6 rounded-xl bg-[#1C2541] hover:bg-[#141B30] text-white font-bold text-sm shadow-md shadow-[#1C2541]/20 transition-all flex items-center justify-center gap-2"
+            disabled={loading}
+            className="h-11 px-6 rounded-xl bg-[#1C2541] hover:bg-[#141B30] disabled:opacity-60 text-white font-bold text-sm shadow-md shadow-[#1C2541]/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Save className="h-4 w-4" />
-            <span>Save Changes</span>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Save Changes</span>
+              </>
+            )}
           </button>
         </form>
       </Card>
@@ -94,7 +140,7 @@ export const SettingsPage: React.FC = () => {
 
           <button
             onClick={handleLogout}
-            className="px-5 py-2.5 rounded-xl bg-[#B94A48] hover:bg-[#963B3A] text-white font-bold text-xs shadow-md shadow-[#B94A48]/20 transition-all flex items-center justify-center gap-2 shrink-0"
+            className="px-5 py-2.5 rounded-xl bg-[#B94A48] hover:bg-[#963B3A] text-white font-bold text-xs shadow-md shadow-[#B94A48]/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             <span>Logout</span>
@@ -104,3 +150,4 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
+

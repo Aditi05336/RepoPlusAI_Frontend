@@ -10,7 +10,7 @@ export const ProfilePage: React.FC = () => {
 
   const displayName = user?.name || 'Developer User';
   const displayEmail = user?.email || 'user@example.com';
-  const displayGithub = user?.github_username || 'octocat';
+  const displayGithub = user?.github_username || user?.username || 'octocat';
 
   // Calculate user avatar initials (e.g., "Adit Sharma" -> "AS", "Aditi Rajput" -> "AR")
   const getInitials = (name: string) => {

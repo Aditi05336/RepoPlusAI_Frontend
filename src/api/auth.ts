@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   github_username: string;
+  username?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -86,3 +87,27 @@ export const getCurrentUser = async (token: string): Promise<AuthResponse> => {
     };
   }
 };
+
+export const updateUsername = async (token: string, username: string): Promise<AuthResponse> => {
+  try {
+    const response = await apiClient.put<AuthResponse>(
+      '/auth/username',
+      { username },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      success: false,
+      error: error.message || 'Failed to connect to authentication server.',
+    };
+  }
+};
+

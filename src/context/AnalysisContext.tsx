@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AnalysisData } from '../types/repository';
 import { analyzeRepository, checkBackendHealth } from '../api/analyzeRepository';
-import { User, logoutUser } from '../api/auth';
+import { User, logoutUser, getCurrentUser } from '../api/auth';
 
 interface RecentSearch {
   owner: string;
@@ -21,6 +21,7 @@ interface AnalysisContextType {
   isMockSignedIn: boolean;
   setIsMockSignedIn: (val: boolean) => void;
   setAuthSession: (user: User, token: string) => void;
+  updateUser: (user: User) => void;
   logout: () => Promise<void>;
   performAnalysis: (owner: string, repo: string) => Promise<void>;
   clearAnalysis: () => void;
@@ -70,6 +71,13 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch {}
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    try {
+      localStorage.setItem('repopulse_user', JSON.stringify(updatedUser));
+    } catch {}
+  };
+
   const logout = async () => {
     setUser(null);
     setToken(null);
@@ -79,6 +87,19 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       await logoutUser();
     } catch {}
   };
+
+  useEffect(() => {
+    if (token) {
+      getCurrentUser(token).then((res) => {
+        if (res.success && res.user) {
+          setUser(res.user);
+          try {
+            localStorage.setItem('repopulse_user', JSON.stringify(res.user));
+          } catch {}
+        }
+      });
+    }
+  }, [token]);
 
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>(() => {
     try {
@@ -165,6 +186,7 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isMockSignedIn,
         setIsMockSignedIn,
         setAuthSession,
+        updateUser,
         logout,
         performAnalysis,
         clearAnalysis,
